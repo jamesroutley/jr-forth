@@ -35,6 +35,15 @@ doliteral:
 	add		esi, 4
 	jmp		next
 
+over:
+	; TODO: This could be done without popping - just read 'a' off the stack
+	; and push it.
+	pop		eax
+	pop		ebx
+	push	eax
+	push	ebx
+	push	eax
+
 star:
 	pop		eax
 	pop		ebx
