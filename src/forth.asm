@@ -30,8 +30,9 @@ dup:
 	push 	eax
 	jmp		next
 
-five:
-	push	5
+doliteral:
+	push	dword [esi]
+	add		esi, 4
 	jmp		next
 
 star:
@@ -59,6 +60,7 @@ exit:
 	; Pop esi from retstk
 	sub		dword [retstkptr], 4
 	mov		esi, [retstkptr]
+	jmp		next
 
 next:
 	mov		eax, esi
@@ -69,5 +71,5 @@ section 	.data
 
 retstk		times 16 dd 0
 retstkptr	dd retstk
-instr		dd five, squared, dot, bye
+instr		dd doliteral, 5, squared, dot, bye
 fmt			db	`%d\n`
