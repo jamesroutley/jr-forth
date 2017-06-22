@@ -1,10 +1,20 @@
+; Magic ints
+sys_exit	equ		1
+sys_read	equ		3
+sys_write	equ		4
+stdin		equ		0
+stdout		equ		1
+stderr		equ		2
+inputlen	equ		128
+
 section		.text
 global		main	
 extern		printf
 
 main:
-	mov		esi, instr
-	jmp		next
+	; mov		esi, instr
+	; jmp		next
+	jmp		accept
 
 ; Built in words:
 bye:
@@ -73,6 +83,14 @@ swap:
 	jmp		next
 
 ; Forth language
+
+accept:
+	mov		edx, inputlen 
+	mov		ecx, input
+	mov		ebx, stdin
+	mov		eax, sys_read 
+	int		0x80
+
 enter:
 	; Push esi to retstk
 	mov		eax, retstkptr
@@ -97,5 +115,6 @@ section 	.data
 
 retstk		times 16 dd 0
 retstkptr	dd retstk
+input		times inputlen db 0
 instr		dd doliteral, 5, doliteral, 7, over, dot, dot, dot, bye
 fmt			db	`%d\n`
