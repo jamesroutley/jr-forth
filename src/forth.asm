@@ -13,20 +13,15 @@ bye:
 	int		0x80
 
 dot:
-	pop		eax
-	; Call printf
-	push	ebp
-	mov		ebp, esp
-
-	push 	eax
+	; printf requires two parameters be pushed to the stack.
+	; - push value to print
+	; - push format string
+	; - call printf
+	; The value to print is already at the top of the stack, so we can omit
+	; - push value to print
 	push	dword fmt
 	call	printf
 	add		esp, 8
-
-	mov		esp, ebp
-	pop		ebp
-	mov		eax, 0
-	ret
 	jmp		next
 
 dup:
@@ -46,7 +41,25 @@ star:
 	push	eax
 	jmp		next
 
+squared:
+	call	enter
+	dd 		dup, star, exit
+
 ; Forth language
+enter:
+	; Push esi to retstk
+	mov		eax, retstkptr
+	mov		[eax], esi
+	add		dword [retstkptr], 4
+	pop		eax
+	mov		esi, eax
+	jmp		next
+
+exit:
+	; Pop esi from retstk
+	sub		dword [retstkptr], 4
+	mov		esi, [retstkptr]
+
 next:
 	mov		eax, esi
 	add		esi, 4
@@ -54,5 +67,7 @@ next:
 
 section 	.data
 
-instr		dd five, dup, star, dot, bye
+retstk		times 16 dd 0
+retstkptr	dd retstk
+instr		dd five, squared, dot, bye
 fmt			db	`%d\n`
