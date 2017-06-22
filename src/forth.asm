@@ -38,11 +38,12 @@ doliteral:
 over:
 	; TODO: This could be done without popping - just read 'a' off the stack
 	; and push it.
-	pop		eax
 	pop		ebx
+	pop		eax
 	push	eax
 	push	ebx
 	push	eax
+	jmp		next
 
 rot:
 	pop		ecx
@@ -96,5 +97,5 @@ section 	.data
 
 retstk		times 16 dd 0
 retstkptr	dd retstk
-instr		dd doliteral, 5, doliteral, 7, doliteral, 9, rot, dot, dot, dot, bye
+instr		dd doliteral, 5, doliteral, 7, over, dot, dot, dot, bye
 fmt			db	`%d\n`
