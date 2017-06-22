@@ -44,6 +44,15 @@ over:
 	push	ebx
 	push	eax
 
+rot:
+	pop		ecx
+	pop		ebx
+	pop		eax
+	push	ebx
+	push	ecx
+	push	eax
+	jmp		next
+
 star:
 	pop		eax
 	pop		ebx
@@ -87,5 +96,5 @@ section 	.data
 
 retstk		times 16 dd 0
 retstkptr	dd retstk
-instr		dd doliteral, 5, doliteral, 7, swap, dot, dot, bye
+instr		dd doliteral, 5, doliteral, 7, doliteral, 9, rot, dot, dot, dot, bye
 fmt			db	`%d\n`
