@@ -74,8 +74,3 @@ $ VBoxManage guestproperty set forth_default_xxxx \
 
 ## Plan
 
-- Hardcode the words 5, DUP, \*, ., BYE, NEXT as labels in the assembly code
-- Create an array of Forth instruction code.
-- Store current Forth program state in a register esi <- Forth program counter
-- Next should increment esi (and call function)
-- Start program by calling NEXT

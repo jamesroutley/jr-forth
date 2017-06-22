@@ -46,6 +46,13 @@ squared:
 	call	enter
 	dd 		dup, star, exit
 
+swap:
+	pop		eax
+	pop		ebx
+	push	eax
+	push	ebx
+	jmp		next
+
 ; Forth language
 enter:
 	; Push esi to retstk
@@ -71,5 +78,5 @@ section 	.data
 
 retstk		times 16 dd 0
 retstkptr	dd retstk
-instr		dd doliteral, 5, squared, dot, bye
+instr		dd doliteral, 5, doliteral, 7, swap, dot, dot, bye
 fmt			db	`%d\n`
