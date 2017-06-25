@@ -12,9 +12,12 @@ global		main
 extern		printf
 
 main:
+	mov	ebp, retstk	; esb contains return stack pointer,
+				; points to the top of the return stack
 	; mov	esi, instr
 	; jmp	next
 	jmp	accept
+
 
 ; Built in words:
 bye:
@@ -92,29 +95,26 @@ accept:
 	int	0x80
 
 enter:
-	; Push esi to retstk
-	mov	eax, retstkptr
-	mov	[eax], esi
-	add	dword [retstkptr], 4
-	pop	eax
-	mov	esi, eax
-	jmp	next
+	mov	ebp, esi	; Move program counter value to return stack
+	add	dword ebp, 4	; Increment return stack pointer
+	pop	esi		; Pop location of first word in compound
+				; statement into the program counter
+	jmp	next		; Start executing word
 
 exit:
 	; Pop esi from retstk
-	sub	dword [retstkptr], 4
-	mov	esi, [retstkptr]
-	jmp	next
+	sub	dword ebp, 4	; Decrement return stack pointer
+	mov	esi, ebp	; Move old program location to esi
+	jmp	next		; Continue execution
 
 next:
-	mov	eax, esi
-	add	esi, 4
-	jmp	[eax]
+	mov	eax, esi	; Store current program counter value
+	add	esi, 4		; Increment program counter
+	jmp	[eax]		; Jump to current program counter value
 
 section 	.data
 
 retstk		times 16 dd 0
-retstkptr	dd retstk
 input		times inputlen db 0
 instr		dd doliteral, 5, doliteral, 7, over, dot, dot, dot, bye
 fmt		db `%d\n`
