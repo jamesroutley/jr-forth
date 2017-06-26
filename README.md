@@ -39,7 +39,7 @@ Assembly:
 
 ## Debug
 
-### Clock skew detected 
+### Clock skew detected
 
 I experienced an issue with `Make`:
 
@@ -50,14 +50,14 @@ rm -f hello hello.o
 make: warning:  Clock skew detected.  Your build may be incomplete.
 ```
 
-This turned out to be an issue with clock drift on the VM. If the host 
+This turned out to be an issue with clock drift on the VM. If the host
 machine sleeps, when it wakes up, the VM's internal clock continues from where
 it left off, making the time incorrect if compared to the host.
 
-Vagrant synchronises a directory between the host and the VM, copying over host 
+Vagrant synchronises a directory between the host and the VM, copying over host
 changes to files. These changes include an edit date, accessible by running
 `ls -lat`. I was editing the Makefile on the host machine, giving an edit time
-that was in the future on the host machine. 
+that was in the future on the host machine.
 
 Luckily, this is easy to fix. Virtualbox already synchronises the time every
 20 minutes, so we can solve this by increasing the synchronisation rate.
@@ -74,3 +74,13 @@ $ VBoxManage guestproperty set forth_default_xxxx \
 
 ## Plan
 
+Word:
+
+- read next word in the input buffer. Push word to the stack
+
+- params
+    - pointer to current position through input string
+- returns
+    - pointer to word - needs to store the word somewhere?
+    -
+<!--- need pointer to current position through word-->

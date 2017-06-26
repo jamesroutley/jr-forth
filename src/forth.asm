@@ -10,13 +10,14 @@ inputlen	equ	128
 section		.text
 global		main
 extern		printf
+extern		wordC
 
 main:
 	mov	ebp, retstk	; esb contains return stack pointer,
 				; points to the top of the return stack
 	; mov	esi, instr
 	; jmp	next
-	jmp	accept
+	jmp	word_f
 
 
 ; Built in words:
@@ -112,9 +113,21 @@ next:
 	add	esi, 4		; Increment program counter
 	jmp	[eax]		; Jump to current program counter value
 
+word_f:
+	push	cur_input
+	push	cur_word
+	call	wordC		; Call out to a C function which will read the
+				; current word into cur_word
+	add	esp, 8
+	; push	cur_word	; Push cur_word to stack
+	jmp	bye
+
+
 section 	.data
 
 retstk		times 16 dd 0
 input		times inputlen db 0
 instr		dd doliteral, 5, doliteral, 7, over, dot, dot, dot, bye
 fmt		db `%d\n`
+cur_input	dd input
+cur_word	times 16 db 0
