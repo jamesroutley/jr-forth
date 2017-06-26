@@ -93,6 +93,7 @@ accept:
 	mov	ebx, stdin
 	mov	eax, sys_read
 	int	0x80
+        jmp     word_f
 
 enter:
 	mov	ebp, esi	; Move program counter value to return stack
@@ -111,6 +112,10 @@ next:
 	mov	eax, esi	; Store current program counter value
 	add	esi, 4		; Increment program counter
 	jmp	[eax]		; Jump to current program counter value
+
+quit:
+        mov     ebp, retstk     ; Empty return stack
+        jmp     accept
 
 word_f:
                                 ; Push necessary args to stack
