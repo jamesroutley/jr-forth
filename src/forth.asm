@@ -15,8 +15,7 @@ extern		wordC
 main:
 	mov	ebp, retstk	; esb contains return stack pointer,
 				; points to the top of the return stack
-	; mov	esi, instr
-	; jmp	next
+	push 	0
 	jmp	word_f
 
 
@@ -114,20 +113,25 @@ next:
 	jmp	[eax]		; Jump to current program counter value
 
 word_f:
-	push	cur_input
-	push	cur_word
+                                ; Push necessary args to stack
+	pop	eax		; Delimiter. If 0, delimit on whitespace
+        push 	eax             ; Push delimiter
+        push    cur_word        ; Push cur_word
+        push    cur_input       ; push cur_input
+	push 	input           ; push input
+
 	call	wordC		; Call out to a C function which will read the
 				; current word into cur_word
-	add	esp, 8
-	; push	cur_word	; Push cur_word to stack
+	add	esp, 16         ; Remove args from stack
+	push	cur_word	; Push cur_word to stack
 	jmp	bye
 
 
 section 	.data
 
 retstk		times 16 dd 0
-input		times inputlen db 0
-instr		dd doliteral, 5, doliteral, 7, over, dot, dot, dot, bye
-fmt		db `%d\n`
+; input		times inputlen db 0
+input		db ' 5 DUP SQUARED .',0  ; Used for testing
+fmt		db `%s\n`
 cur_input	dd input
 cur_word	times 16 db 0
