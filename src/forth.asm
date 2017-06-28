@@ -126,6 +126,10 @@ enter:
 				; statement into the program counter
 	jmp	next		; Start executing word
 
+execute:
+        pop     eax
+        jmp     eax
+
 exit:
 	; Pop esi from retstk
 	sub	dword ebp, 4	; Decrement return stack pointer
@@ -140,7 +144,6 @@ find:   ; ( str -- xt|str 0|-1 )
         add     esp, 12
         push    dword [xt]
         push    eax             ; push found flag to stack
-        ; jmp     dot
         ; jmp     bye
 
 next:
@@ -171,8 +174,8 @@ section 	.data
 
 retstk		times 16 dd 0
 ; input		times inputlen db 0
-input		db ' bye DUP SQUARED .',0  ; Used for testing
-fmt		db `%p\n`
+input		db ' . DUP SQUARED .',0  ; Used for testing
+fmt		db `%d\n`
 cur_input	dd input
 cur_word	times 16 db 0
 latest          dd swap_hd
