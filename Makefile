@@ -3,7 +3,7 @@
 build: clean forth
 
 forth: clean forth.o word.o find.o
-	gcc -g -o build/forth build/forth.o build/word.o
+	gcc -g -o build/forth build/forth.o build/word.o build/find.o
 
 forth.o: clean
 	mkdir -p build
