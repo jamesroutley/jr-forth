@@ -13,16 +13,19 @@ extern		printf
 extern		wordC
 extern          findC
 
+%define prev_hd dd 	0
+
 ; adds a word's headers to the dictionary
 ; param: link_address, immediate_flag, name
 %macro  header  4
         align 16, db 0
 %1_hd:
-        dd      %2           ; Add address of previous entry
+	prev_hd		     ; Add address of previous entry
         db      %3           ; Add immediate_flag
         db      %4,0         ; Add null-terminated string literal
         align 16, db 0
 %1:
+%define prev_hd	dd 	%1_hd	; Redefine prev_hd to current header label
 %endmacro
 
 main:
