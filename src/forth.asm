@@ -17,12 +17,12 @@ extern          findC
 
 ; adds a word's headers to the dictionary
 ; param: link_address, immediate_flag, name
-%macro  header  4
+%macro  header  3
         align 16, db 0
 %1_hd:
 	prev_hd		     ; Add address of previous entry
-        db      %3           ; Add immediate_flag
-        db      %4,0         ; Add null-terminated string literal
+        db      %2           ; Add immediate_flag
+        db      %3,0         ; Add null-terminated string literal
         align 16, db 0
 %1:
 %define prev_hd	dd 	%1_hd	; Redefine prev_hd to current header label
@@ -38,12 +38,12 @@ main:
 ; dictionary:
 dict:
 
-header bye, 0, 0, 'BYE'
+header bye, 0, 'BYE'
 	mov	ebx, 0
 	mov	eax, 1
 	int	0x80
 
-header dot, bye_hd, 0, '.'
+header dot, 0, '.'
 	; printf requires two parameters be pushed to the stack.
 	; - push value to print
 	; - push format string
@@ -56,18 +56,18 @@ header dot, bye_hd, 0, '.'
         jmp     bye
 	jmp	next
 
-header dup, dot_hd, 0, 'DUP'
+header dup, 0, 'DUP'
 	pop	eax
 	push 	eax
 	push 	eax
 	jmp	next
 
-header doliteral, dot_hd, 0, 'DOLITERAL'
+header doliteral, 0, 'DOLITERAL'
 	push	dword [esi]
 	add	esi, 4
 	jmp	next
 
-header over, doliteral_hd, 0, 'OVER'
+header over, 0, 'OVER'
 	; TODO: This could be done without popping - just read 'a' off the stack
 	; and push it.
 	pop	ebx
@@ -77,7 +77,7 @@ header over, doliteral_hd, 0, 'OVER'
 	push	eax
 	jmp	next
 
-header rot, over_hd, 0, 'ROT'
+header rot, 0, 'ROT'
 	pop	ecx
 	pop	ebx
 	pop	eax
@@ -86,18 +86,18 @@ header rot, over_hd, 0, 'ROT'
 	push	eax
 	jmp	next
 
-header star, rot_hd, 0, '*'
+header star, 0, '*'
 	pop	eax
 	pop	ebx
 	imul	eax, ebx
 	push	eax
 	jmp	next
 
-header squared, star_hd, 0, 'SQUARED'
+header squared, 0, 'SQUARED'
 	call	enter
 	dd 	dup, star, exit
 
-header swap, squared_hd, 0, 'SWAP'
+header swap, 0, 'SWAP'
 	pop	eax
 	pop	ebx
 	push	eax
