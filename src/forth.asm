@@ -17,11 +17,12 @@ extern          findC
 ; param: link_address, immediate_flag, name
 %macro  header  4
         align 16, db 0
-%1:
+%1_hd:
         dd      %2           ; Add address of previous entry
         db      %3           ; Add immediate_flag
         db      %4,0         ; Add null-terminated string literal
         align 16, db 0
+%1:
 %endmacro
 
 main:
@@ -34,14 +35,12 @@ main:
 ; dictionary:
 dict:
 
-        header bye_hd, 0, 0, 'BYE'
-bye:
+header bye, 0, 0, 'BYE'
 	mov	ebx, 0
 	mov	eax, 1
 	int	0x80
 
-        header dot_hd, bye_hd, 0, '.'
-dot:
+header dot, bye_hd, 0, '.'
 	; printf requires two parameters be pushed to the stack.
 	; - push value to print
 	; - push format string
@@ -54,21 +53,18 @@ dot:
         jmp     bye
 	jmp	next
 
-        header dup_hd, dot_hd, 0, 'DUP'
-dup:
+header dup, dot_hd, 0, 'DUP'
 	pop	eax
 	push 	eax
 	push 	eax
 	jmp	next
 
-        header doliteral_hd, dot_hd, 0, 'DOLITERAL'
-doliteral:
+header doliteral, dot_hd, 0, 'DOLITERAL'
 	push	dword [esi]
 	add	esi, 4
 	jmp	next
 
-        header over_hd, doliteral_hd, 0, 'OVER'
-over:
+header over, doliteral_hd, 0, 'OVER'
 	; TODO: This could be done without popping - just read 'a' off the stack
 	; and push it.
 	pop	ebx
@@ -78,8 +74,7 @@ over:
 	push	eax
 	jmp	next
 
-        header rot_hd, over_hd, 0, 'ROT'
-rot:
+header rot, over_hd, 0, 'ROT'
 	pop	ecx
 	pop	ebx
 	pop	eax
@@ -88,21 +83,18 @@ rot:
 	push	eax
 	jmp	next
 
-        header star_hd, rot_hd, 0, '*'
-star:
+header star, rot_hd, 0, '*'
 	pop	eax
 	pop	ebx
 	imul	eax, ebx
 	push	eax
 	jmp	next
 
-        header squared_hd, star_hd, 0, 'SQUARED'
-squared:
+header squared, star_hd, 0, 'SQUARED'
 	call	enter
 	dd 	dup, star, exit
 
-        header swap_hd, squared_hd, 0, 'SWAP'
-swap:
+header swap, squared_hd, 0, 'SWAP'
 	pop	eax
 	pop	ebx
 	push	eax
@@ -144,7 +136,8 @@ find:   ; ( str -- xt|str 0|-1 )
         add     esp, 12
         push    dword [xt]
         push    eax             ; push found flag to stack
-        ; jmp     bye
+	jmp	dot
+        jmp     bye
 
 next:
 	mov	eax, esi	; Store current program counter value
@@ -175,7 +168,7 @@ section 	.data
 retstk		times 16 dd 0
 ; input		times inputlen db 0
 input		db ' . DUP SQUARED .',0  ; Used for testing
-fmt		db `%d\n`
+fmt		db `%p\n`
 cur_input	dd input
 cur_word	times 16 db 0
 latest          dd swap_hd
